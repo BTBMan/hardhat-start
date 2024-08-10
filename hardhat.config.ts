@@ -4,6 +4,7 @@ import 'dotenv/config';
 
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 
 task('accounts', 'Prints the list of accounts', async (_, hre) => {
   const signers = await hre.ethers.getSigners();
@@ -20,6 +21,9 @@ task('test', 'Just test', async () => {
 const config: HardhatUserConfig = {
   solidity: '0.8.24',
   defaultNetwork: 'hardhat',
+  etherscan: {
+    apiKey: ETHERSCAN_API_KEY,
+  },
   networks: {
     sepolia: {
       url: SEPOLIA_RPC_URL,
