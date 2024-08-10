@@ -5,8 +5,6 @@ const FirstHardhatContractModule = buildModule(
   (builder) => {
     const contract = builder.contract('FirstHardhatContract');
 
-    console.log(contract);
-
     return { contract };
   },
 );

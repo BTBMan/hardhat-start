@@ -1,5 +1,9 @@
-import { HardhatUserConfig, task } from 'hardhat/config';
+import { HardhatUserConfig, task, vars } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
+import 'dotenv/config';
+
+const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 task('accounts', 'Prints the list of accounts', async (_, hre) => {
   const signers = await hre.ethers.getSigners();
@@ -9,8 +13,20 @@ task('accounts', 'Prints the list of accounts', async (_, hre) => {
   }
 });
 
+task('test', 'Just test', async () => {
+  console.log(SEPOLIA_RPC_URL, PRIVATE_KEY);
+});
+
 const config: HardhatUserConfig = {
   solidity: '0.8.24',
+  defaultNetwork: 'hardhat',
+  networks: {
+    sepolia: {
+      url: SEPOLIA_RPC_URL,
+      accounts: [PRIVATE_KEY!],
+      chainId: 11155111, // ethereum sepolia testnet: 11155111, mainnet: 1
+    },
+  },
 };
 
 export default config;
