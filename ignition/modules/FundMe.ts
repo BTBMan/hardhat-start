@@ -14,6 +14,7 @@ const FundMe = buildModule('FundMe', (builder) => {
     ethUsdPriceFeedAddress = networkConfig[chainId]?.ethUsdPriceFeed;
   }
 
+  // deploy the lib which is imported by the contract, first.
   const priceConverterLib = builder.library('PriceConverter');
   const contract = builder.contract('FundMe', [ethUsdPriceFeedAddress!], {
     libraries: {

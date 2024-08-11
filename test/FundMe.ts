@@ -1,23 +1,13 @@
 import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import hre from 'hardhat';
+import FundMe from '../ignition/modules/FundMe';
 
 describe('FundMe', () => {
   const deployFixture = async () => {
-    // deploy the lib which is imported by the contract, first.
-    const priceConverterLibFactory = await hre.ethers.getContractFactory(
-      'PriceConverter',
-    );
-    const priceConverterLib = await priceConverterLibFactory.deploy();
+    const { contract } = await hre.ignition.deploy(FundMe);
 
-    const factory = await hre.ethers.getContractFactory('FundMe', {
-      libraries: {
-        PriceConverter: priceConverterLib,
-      },
-    });
-    const contract = await factory.deploy();
-
-    return { factory, contract };
+    return { contract };
   };
 
   describe('Deployment', () => {
