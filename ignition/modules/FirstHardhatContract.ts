@@ -5,13 +5,10 @@ const FirstHardhatContractModule = buildModule(
   (builder) => {
     const contract = builder.contract('FirstHardhatContract');
 
-    const contractName = builder.staticCall(contract, 'getName', []);
+    builder.staticCall(contract, 'getName', []);
     const triggerEvent = builder.call(contract, 'triggerEvent', []);
 
-    const value = builder.readEventArgument(triggerEvent, 'MyEvent', 0);
-
-    console.log(value);
-    console.log(contractName);
+    builder.readEventArgument(triggerEvent, 'MyEvent', 0);
 
     return { contract };
   },

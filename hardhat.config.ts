@@ -30,6 +30,10 @@ const config: HardhatUserConfig = {
       accounts: [PRIVATE_KEY!],
       chainId: 11155111, // ethereum sepolia testnet: 11155111, mainnet: 1
     },
+    local: {
+      url: 'http://127.0.0.1:8545/',
+      chainId: 31337, // this is the default chainId of the hardhat network
+    },
   },
 };
 
