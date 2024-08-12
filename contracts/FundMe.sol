@@ -24,7 +24,7 @@ contract FundMe {
     address[] public funders;
     mapping(address funder => uint256 amountFunded)
         public addressToAmountFunded;
-    AggregatorV3Interface public priceFeed;
+    address public priceFeedAddress;
     uint256 public constant MINIMUM_USD = 5e18; // use constant to save gas fee
     address public immutable i_owner; // use immutable to save gas fee
 
@@ -48,9 +48,9 @@ contract FundMe {
     // internal
     // private
     // view / pure
-    constructor(address priceFeedAddress) {
+    constructor(address _priceFeedAddress) {
         i_owner = msg.sender; // save deployer
-        priceFeed = AggregatorV3Interface(priceFeedAddress);
+        priceFeedAddress = _priceFeedAddress;
     }
 
     receive() external payable {
@@ -67,7 +67,7 @@ contract FundMe {
      */
     function fund() public payable {
         require(
-            msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
+            msg.value.getConversionRate(priceFeedAddress) >= MINIMUM_USD,
             "Didn't send enough!"
         );
 
