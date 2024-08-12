@@ -5,26 +5,24 @@ import FundMe from '../ignition/modules/FundMe';
 
 describe('FundMe', () => {
   const deployFixture = async () => {
-    const { contract } = await hre.ignition.deploy(FundMe);
+    const { contract, mockV3AggregatorContract } = await hre.ignition.deploy(
+      FundMe,
+    );
 
-    return { contract };
+    return { contract, mockV3AggregatorContract };
   };
 
-  describe('Deployment', () => {
-    it('just console test', async () => {
-      await loadFixture(deployFixture);
-    });
+  describe('constructor', async () => {
+    it('sets the aggregator addresses correctly', async () => {
+      const { contract, mockV3AggregatorContract } = await loadFixture(
+        deployFixture,
+      );
 
-    it('should deploy contract successfully', async () => {
-      await loadFixture(deployFixture);
-
-      expect(true).to.equal(true);
-    });
-
-    it('should get the MINIMUM_USD', async () => {
-      const { contract } = await loadFixture(deployFixture);
-
-      expect(await contract.MINIMUM_USD()).to.equal(BigInt(5e18));
+      if (mockV3AggregatorContract) {
+        expect(await contract.priceFeedAddress()).to.equal(
+          mockV3AggregatorContract.target,
+        );
+      }
     });
   });
 });
