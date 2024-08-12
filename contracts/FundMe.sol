@@ -53,13 +53,13 @@ contract FundMe {
         priceFeedAddress = _priceFeedAddress;
     }
 
-    receive() external payable {
-        fund();
-    }
+    // receive() external payable {
+    //     fund();
+    // }
 
-    fallback() external payable {
-        fund();
-    }
+    // fallback() external payable {
+    //     fund();
+    // }
 
     /**
      * @notice fund function
