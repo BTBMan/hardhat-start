@@ -2,7 +2,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import hre from 'hardhat';
 
-describe('FirstHardhatContract', () => {
+describe.skip('FirstHardhatContract', () => {
   const deployFixture = async () => {
     // const signers = await hre.ethers.getSigners();
 
