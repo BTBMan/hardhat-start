@@ -1,40 +1,70 @@
 // SPDX-License-Identifier: MIT
+// pragma
 pragma solidity ^0.8.4;
-
+// imports
 import "./PriceConverter.sol";
 
-error NotOwner();
+// error name is contract name plus __ plus name
+error FundMe__NotOwner();
 
+// interfaces
+// libraries
+// contracts
+/**
+ * @title A contract for crowd funding
+ * @author BTBMan
+ * @notice This contract is to demo a sample funding contract
+ * @dev This implements price feeds as our library
+ */
 contract FundMe {
+    // type declarations
     using PriceConverter for uint256;
 
-    // use constant to save gas fee
-    uint256 public constant MINIMUM_USD = 5e18;
-
-    // use immutable to save gas fee
-    address public immutable i_owner;
-
+    // state variable
     address[] public funders;
-
     mapping(address funder => uint256 amountFunded)
         public addressToAmountFunded;
-
     AggregatorV3Interface public priceFeed;
+    uint256 public constant MINIMUM_USD = 5e18; // use constant to save gas fee
+    address public immutable i_owner; // use immutable to save gas fee
 
+    // modifiers
+    modifier onlyOwner() {
+        // require(msg.sender == i_owner, "Sender is not owner!");
+        // do this way is gonna save gas fee
+        if (msg.sender != i_owner) {
+            revert FundMe__NotOwner();
+        }
+        _;
+    }
+
+    // functions
+    // functions order
+    // constructor
+    // receive
+    // fallback
+    // external
+    // public
+    // internal
+    // private
+    // view / pure
     constructor(address priceFeedAddress) {
         i_owner = msg.sender; // save deployer
         priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
-    modifier onlyOwner() {
-        // require(msg.sender == i_owner, "Sender is not owner!");
-        // do this way is gonna save gas fee
-        if (msg.sender != i_owner) {
-            revert NotOwner();
-        }
-        _;
+    receive() external payable {
+        fund();
     }
 
+    fallback() external payable {
+        fund();
+    }
+
+    /**
+     * @notice fund function
+     * @dev This implements price feeds as our library
+     */
     function fund() public payable {
         require(
             msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
@@ -61,13 +91,5 @@ contract FundMe {
         }("");
 
         require(callSuccess, "Call failed!");
-    }
-
-    receive() external payable {
-        fund();
-    }
-
-    fallback() external payable {
-        fund();
     }
 }
