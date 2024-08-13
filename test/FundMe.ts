@@ -2,6 +2,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-toolbox/network-helpers';
 import { expect } from 'chai';
 import hre from 'hardhat';
 import FundMe from '../ignition/modules/FundMe';
+import { Contract } from 'ethers';
 
 describe('FundMe', () => {
   const sendValue = hre.ethers.parseEther('1');
@@ -54,6 +55,50 @@ describe('FundMe', () => {
       const response = await contract.funders(0);
 
       expect(response).to.equal(deployer);
+    });
+  });
+
+  describe('withdraw', () => {
+    let contract: Contract;
+
+    beforeEach(async function () {
+      // we can save contract to context
+      // this.contract = (await loadFixture(deployFixture)).contract;
+      // await this.contract.fund({ value: sendValue });
+
+      // or save to a variable
+      contract = (await loadFixture(deployFixture)).contract;
+
+      await contract.fund({ value: sendValue });
+    });
+
+    it('withdraw ETH from a single funder', async function () {
+      const [deployer] = await hre.ethers.getSigners();
+      const startingFundMeBalance = await hre.ethers.provider.getBalance(
+        contract,
+      );
+      const startingDeployerBalance = await hre.ethers.provider.getBalance(
+        deployer,
+      );
+
+      // act
+      const response = await contract.withdraw();
+      const responseReceipt = await response.wait(1);
+      const gasCost = BigInt(
+        responseReceipt.gasUsed * responseReceipt.gasPrice,
+      );
+
+      const endingFundMeBalance = await hre.ethers.provider.getBalance(
+        contract,
+      );
+      const endingDeployerBalance = await hre.ethers.provider.getBalance(
+        deployer,
+      );
+
+      expect(endingFundMeBalance).to.equal(0);
+      expect(startingFundMeBalance + startingDeployerBalance).to.equal(
+        endingDeployerBalance + gasCost,
+      );
     });
   });
 });
