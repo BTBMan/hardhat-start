@@ -34,6 +34,7 @@ const config: HardhatUserConfig = {
     currency: 'USD',
     coinmarketcap: COIN_MARKET_KEY,
     token: 'ETH',
+    L1Etherscan: ETHERSCAN_API_KEY,
   },
 };
 

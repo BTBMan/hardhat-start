@@ -28,7 +28,7 @@
     "dotenv": "^16.4.5",
     "ethers": "^6.13.2",
     "hardhat": "^2.22.8",
-    "hardhat-gas-reporter": "^1.0.10",
+    "hardhat-gas-reporter": "^2.2.1",
     "solidity-coverage": "^0.8.12",
     "ts-node": ">=8.0.0",
     "typechain": "^8.3.0",
