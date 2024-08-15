@@ -100,5 +100,47 @@ describe('FundMe', () => {
         endingDeployerBalance + gasCost,
       );
     });
+
+    it('allow us to withdraw with multiple funders', async function () {
+      const [deployer, ...accounts] = await hre.ethers.getSigners();
+      for (let i = 0; i < 6; i++) {
+        const account = accounts[i];
+        const fundMeConnectedContract = await contract.connect(account);
+        await (fundMeConnectedContract as any).fund({ value: sendValue });
+      }
+
+      const startingFundMeBalance = await hre.ethers.provider.getBalance(
+        contract,
+      );
+      const startingDeployerBalance = await hre.ethers.provider.getBalance(
+        deployer,
+      );
+
+      const response = await contract.withdraw();
+      const responseReceipt = await response.wait(1);
+      const gasCost = BigInt(
+        responseReceipt.gasUsed * responseReceipt.gasPrice,
+      );
+
+      const endingFundMeBalance = await hre.ethers.provider.getBalance(
+        contract,
+      );
+      const endingDeployerBalance = await hre.ethers.provider.getBalance(
+        deployer,
+      );
+
+      expect(endingFundMeBalance).to.equal(0);
+      expect(startingFundMeBalance + startingDeployerBalance).to.equal(
+        endingDeployerBalance + gasCost,
+      );
+
+      await expect(contract.funders(0)).to.be.reverted;
+
+      for (let i = 0; i < 6; i++) {
+        const account = accounts[i];
+
+        expect(await contract.addressToAmountFunded(account)).to.equal(0);
+      }
+    });
   });
 });
