@@ -3,6 +3,7 @@
 pragma solidity ^0.8.4;
 // imports
 import "./PriceConverter.sol";
+// import "hardhat/console.sol";
 
 // error name is contract name plus __ plus name
 error FundMe__NotOwner();
@@ -51,6 +52,8 @@ contract FundMe {
     constructor(address _priceFeedAddress) {
         i_owner = msg.sender; // save deployer
         priceFeedAddress = _priceFeedAddress;
+
+        // console.log("console in solidity: ", i_owner);
     }
 
     // receive() external payable {
