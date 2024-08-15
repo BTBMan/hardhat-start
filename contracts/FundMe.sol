@@ -22,12 +22,13 @@ contract FundMe {
     using PriceConverter for uint256;
 
     // state variable
-    address[] public funders;
+    // variable that has prefix 's' means it is a storage variable
+    address[] public s_funders;
     mapping(address funder => uint256 amountFunded)
-        public addressToAmountFunded;
-    address public priceFeedAddress;
-    uint256 public constant MINIMUM_USD = 5e18; // use constant to save gas fee
+        public s_addressToAmountFunded;
+    address public s_priceFeedAddress;
     address public immutable i_owner; // use immutable to save gas fee
+    uint256 public constant MINIMUM_USD = 5e18; // use constant to save gas fee
 
     // modifiers
     modifier onlyOwner() {
@@ -51,7 +52,7 @@ contract FundMe {
     // view / pure
     constructor(address _priceFeedAddress) {
         i_owner = msg.sender; // save deployer
-        priceFeedAddress = _priceFeedAddress;
+        s_priceFeedAddress = _priceFeedAddress;
 
         // console.log("console in solidity: ", i_owner);
     }
@@ -70,25 +71,44 @@ contract FundMe {
      */
     function fund() public payable {
         require(
-            msg.value.getConversionRate(priceFeedAddress) >= MINIMUM_USD,
+            msg.value.getConversionRate(s_priceFeedAddress) >= MINIMUM_USD,
             "Didn't send enough!"
         );
 
-        funders.push(msg.sender);
-        addressToAmountFunded[msg.sender] += msg.value;
+        s_funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] += msg.value;
     }
 
     function withdraw() public onlyOwner {
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < s_funders.length;
+            funderIndex++
+        ) {
+            address funder = s_funders[funderIndex];
+            s_addressToAmountFunded[funder] = 0;
+        }
+
+        s_funders = new address[](0); // reset funders to brand new blank address array
+        (bool callSuccess, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
+
+        require(callSuccess, "Call failed!");
+    }
+
+    function cheaperWithdraw() public onlyOwner {
+        address[] memory funders = s_funders;
         for (
             uint256 funderIndex = 0;
             funderIndex < funders.length;
             funderIndex++
         ) {
             address funder = funders[funderIndex];
-            addressToAmountFunded[funder] = 0;
+            s_addressToAmountFunded[funder] = 0;
         }
 
-        funders = new address[](0); // reset funders to brand new blank address array
+        s_funders = new address[](0); // reset funders to brand new blank address array
         (bool callSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
         }("");
