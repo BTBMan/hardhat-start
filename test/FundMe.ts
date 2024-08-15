@@ -21,7 +21,7 @@ describe('FundMe', () => {
       );
 
       if (mockV3AggregatorContract) {
-        expect(await contract.s_priceFeedAddress()).to.equal(
+        expect(await contract.getPriceFeedAddress()).to.equal(
           mockV3AggregatorContract.target,
         );
       }
@@ -41,7 +41,7 @@ describe('FundMe', () => {
 
       await contract.fund({ value: sendValue });
 
-      const response = await contract.s_addressToAmountFunded(deployer);
+      const response = await contract.getAddressToAmountFunded(deployer);
 
       expect(response).to.equal(sendValue);
     });
@@ -52,7 +52,7 @@ describe('FundMe', () => {
 
       await contract.fund({ value: sendValue });
 
-      const response = await contract.s_funders(0);
+      const response = await contract.getFunders(0);
 
       expect(response).to.equal(deployer);
     });
@@ -134,12 +134,12 @@ describe('FundMe', () => {
         endingDeployerBalance + gasCost,
       );
 
-      await expect(contract.s_funders(0)).to.be.reverted;
+      await expect(contract.getFunders(0)).to.be.reverted;
 
       for (let i = 0; i < 6; i++) {
         const account = accounts[i];
 
-        expect(await contract.s_addressToAmountFunded(account)).to.equal(0);
+        expect(await contract.getAddressToAmountFunded(account)).to.equal(0);
       }
     });
 
@@ -232,12 +232,12 @@ describe('FundMe', () => {
         endingDeployerBalance + gasCost,
       );
 
-      await expect(contract.s_funders(0)).to.be.reverted;
+      await expect(contract.getFunders(0)).to.be.reverted;
 
       for (let i = 0; i < 6; i++) {
         const account = accounts[i];
 
-        expect(await contract.s_addressToAmountFunded(account)).to.equal(0);
+        expect(await contract.getAddressToAmountFunded(account)).to.equal(0);
       }
     });
 

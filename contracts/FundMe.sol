@@ -23,10 +23,10 @@ contract FundMe {
 
     // state variable
     // variable that has prefix 's' means it is a storage variable
-    address[] public s_funders;
+    address[] private s_funders;
     mapping(address funder => uint256 amountFunded)
-        public s_addressToAmountFunded;
-    address public s_priceFeedAddress;
+        private s_addressToAmountFunded;
+    address private s_priceFeedAddress;
     address public immutable i_owner; // use immutable to save gas fee
     uint256 public constant MINIMUM_USD = 5e18; // use constant to save gas fee
 
@@ -114,5 +114,19 @@ contract FundMe {
         }("");
 
         require(callSuccess, "Call failed!");
+    }
+
+    function getFunders(uint256 index) public view returns (address) {
+        return s_funders[index];
+    }
+
+    function getAddressToAmountFunded(
+        address funder
+    ) public view returns (uint256) {
+        return s_addressToAmountFunded[funder];
+    }
+
+    function getPriceFeedAddress() public view returns (address) {
+        return s_priceFeedAddress;
     }
 }
