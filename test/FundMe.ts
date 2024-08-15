@@ -142,5 +142,17 @@ describe('FundMe', () => {
         expect(await contract.addressToAmountFunded(account)).to.equal(0);
       }
     });
+
+    it('only allows the owner to withdraw', async () => {
+      const [_, other] = await hre.ethers.getSigners();
+      const fundMeConnectedContract = await contract.connect(other);
+
+      await expect(
+        (fundMeConnectedContract as any).withdraw(),
+      ).to.be.revertedWithCustomError(
+        fundMeConnectedContract,
+        'FundMe__NotOwner',
+      );
+    });
   });
 });
